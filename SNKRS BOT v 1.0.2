@@ -1,0 +1,262 @@
+package com.company;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
+import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.net.Authenticator;
+import java.util.concurrent.TimeUnit;
+public class Main extends JFrame implements ActionListener {
+    //STATIC  VARIABLES
+    private static JTextField link;
+    private static JTextField mail;
+    private static JTextField pass;
+    //MAIL GENERATING--------------------
+    public static String mailGenerate(String mailNum){
+        String mail;
+        mail = "konto" + mailNum + "@vimbing.club";
+        return mail;
+    }
+    //SLEEP FUNCTION
+    private static void sleepFor(int miliseconds) throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(miliseconds);
+    }
+    //GUI FUNCTION
+    private static void myGui(){
+        JPanel panel = new JPanel();
+        JFrame frame = new JFrame();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.add(panel);
+
+        //LINK
+        JLabel labelLink = new JLabel("Link: ");
+        labelLink.setBounds(10, 80, 80, 50);
+        panel.add(labelLink);
+
+        link = new JTextField(20);
+        link.setBounds(100, 80, 165, 25);
+        panel.add(link);
+
+        //MAILS
+        JLabel labelMail = new JLabel("Mails: ");
+        labelMail.setBounds(10, 80, 80, 50);
+        panel.add(labelMail);
+
+        mail = new JTextField(20);
+        mail.setBounds(100, 80, 165, 25);
+        panel.add(mail);
+
+        //PASSWORDS
+        JLabel labelPass = new JLabel("Passwords: ");
+        labelPass.setBounds(10, 80, 80, 50);
+        panel.add(labelPass);
+
+        pass = new JTextField(20);
+        pass.setBounds(100, 80, 165, 25);
+        panel.add(pass);
+
+
+        JButton button = new JButton("GO!");
+        button.setSize(50, 30);
+        button.addActionListener(new Main());
+        panel.add(button);
+
+        frame.setSize(274, 225);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+
+    }
+    //MAIN FUNCTION
+    public static void main(String[] args) throws IOException {
+        myGui();
+
+    }
+    //MAIL GENERATE
+    private static void mailGetting(String mailString) throws IOException {
+        char[] charString = new char[mailString.length()];
+        charString = mailString.toCharArray();
+        for(int i=0; i<mailString.length(); i++){
+            if(mailString.charAt(i)==':'){
+                charString[i] = '\n';
+            }
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(".\\mails.txt"));
+        writer.write(charString);
+        writer.close();
+    }
+    //PASS GENERATE
+    private static void passwordGetting(String passString) throws IOException {
+        char[] charStringPass = new char[passString.length()];
+        charStringPass = passString.toCharArray();
+        for(int i=0; i<passString.length(); i++){
+            if(passString.charAt(i)==':'){
+                charStringPass[i] = '\n';
+            }
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(".\\passwords.txt"));
+        writer.write(charStringPass);
+        writer.close();
+    }
+    //MAIN FUNCTION - DOING ALL STUFF
+    public static void doStuff(WebDriver driver, int mailNum) throws InterruptedException, IOException{
+        //--------------------------------
+        //MAIL READ-----------------------
+        //--------------------------------
+        BufferedReader reader;
+        reader = new BufferedReader(new FileReader(".\\mails.txt"));
+        String line = reader.readLine();
+        String[] a = new String[25];
+        int count = 0;
+        while(line != null){
+            a[count] = line;
+            line = reader.readLine();
+            count++;
+        }
+        reader.close();
+        //--------------------------------
+        //PASS READ-----------------------
+        //--------------------------------
+        BufferedReader readerpass;
+        readerpass = new BufferedReader(new FileReader(".\\passwords.txt"));
+        String linepass = readerpass.readLine();
+        String[] apass = new String[25];
+        int countpass = 0;
+        while(linepass != null){
+            apass[countpass] = linepass;
+            linepass = readerpass.readLine();
+            countpass++;
+        }
+        reader.close();
+        //--------------------------------
+        //DOING STUFF---------------------
+        //--------------------------------
+        driver.get("https://www.nike.com/launch");
+        sleepFor(1500);
+        System.out.println("FOR ACCOUNT NUMBER " + (mailNum+1));
+        for(int i=1; i>0; i++){
+            if(!driver.getCurrentUrl().equals("https://www.nike.com/launch")){
+                System.out.println("LINK COUNTRY ERROR");
+                driver.get("https://www.nike.com/launch");
+                sleepFor(1500);
+            }
+            else{
+                System.out.println("LINK COUNTRY FINE FOR ACCOUNT");
+                break;
+            }
+        }
+        for(;;){
+            if(driver.findElements(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).size()!=0){
+                driver.findElement(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).click();
+            }
+            sleepFor(1000);
+            driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/div/header/div[2]/section/div[2]/button")).click();
+            sleepFor(690);
+            driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/nav/ul/li[1]/button")).click();
+            sleepFor(1000);
+            driver.findElement(By.xpath("//input[@placeholder='Email address']")).sendKeys(a[mailNum]);
+            sleepFor(1000);
+            driver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys(apass[mailNum]);
+            driver.findElement(By.xpath("//input[@value='SIGN IN']")).click();
+            sleepFor(2500);
+            if(driver.findElements(By.xpath("//input[@value='Dismiss this error']")).size()==0){
+                System.out.println("NO SERVER ERROR APPEARED");
+                sleepFor(1500);
+                if(driver.findElements(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).size()!=0){
+                    driver.findElement(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).click();
+                }
+                sleepFor(1000);
+                driver.navigate().refresh();
+                sleepFor(1500);
+                driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/div/header/div[2]/section/div[2]/button")).click();
+
+                if(driver.findElements(By.xpath("//button[@data-qa='logout-button']")).size()!=0){
+                    System.out.println("LOGGED IN");
+                    break;
+                }
+                else{
+                    System.out.println("NOT LOGGED IN ON ACCOUNT " + (mailNum+1));
+                    break;
+                }
+            }
+            else {
+                System.out.println("ERROR APPEARED, RESTARTING...");
+                driver.navigate().refresh();
+            }
+        }
+        sleepFor(2000);
+        driver.get(link.getText());
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+
+            System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\chromedriver.exe");
+            //INSTANCES OF DRIVERS
+            ChromeOptions options1 = new ChromeOptions();
+            ChromeOptions options2 = new ChromeOptions();
+            ChromeOptions options3 = new ChromeOptions();
+            ChromeOptions options4 = new ChromeOptions();
+            ChromeOptions options5 = new ChromeOptions();
+            //PROXY PATHS
+            options1.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p1.zip"));
+            options2.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p2.zip"));
+            options3.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p3.zip"));
+            options4.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p4.zip"));
+            options5.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p5.zip"));
+            //MAIL CREATE
+            mailGetting(mail.getText());
+            passwordGetting(pass.getText());
+            //DRIVERS
+            System.out.println();
+            WebDriver driver1 = new ChromeDriver(options1);
+            WebDriver driver2 = new ChromeDriver(options2);
+            WebDriver driver3 = new ChromeDriver(options3);
+            WebDriver driver4 = new ChromeDriver(options4);
+            WebDriver driver5 = new ChromeDriver(options5);
+            //SETTING POSITION OF BROWSERS
+            driver1.manage().window().setSize(new Dimension(500, 500));
+            driver1.manage().window().setPosition(new Point(0, 0));
+            driver1.manage().deleteAllCookies();
+
+            driver2.manage().window().setSize(new Dimension(500, 500));
+            driver2.manage().window().setPosition(new Point(500, 0));
+            driver2.manage().deleteAllCookies();
+
+            driver3.manage().window().setSize(new Dimension(500, 500));
+            driver3.manage().window().setPosition(new Point(1000, 0));
+            driver3.manage().deleteAllCookies();
+
+            driver4.manage().window().setSize(new Dimension(500, 500));
+            driver4.manage().window().setPosition(new Point(1500, 0));
+            driver4.manage().deleteAllCookies();
+
+            driver5.manage().window().setSize(new Dimension(500, 500));
+            driver5.manage().window().setPosition(new Point(0, 500));
+            driver5.manage().deleteAllCookies();
+
+
+            //TRIGGERING ALL FUNCTIONS
+
+
+            doStuff(driver1, 0);
+            doStuff(driver2, 1);
+            doStuff(driver3, 2);
+            doStuff(driver4, 3);
+            doStuff(driver5, 4);
+
+            sleepFor(100);
+        }
+        catch(InterruptedException | IOException interruptedException){
+            interruptedException.printStackTrace();
+        }
+    }
+}
