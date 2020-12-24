@@ -30,6 +30,18 @@ public class Main extends JFrame implements ActionListener {
     private static void sleepFor(int miliseconds) throws InterruptedException {
         TimeUnit.MILLISECONDS.sleep(miliseconds);
     }
+    private static void emailSending(String[] mailsEnd, String[] passesEnd, int mailNum) throws EmailException {
+        Email email = new SimpleEmail();
+        email.setHostName("smtp.googlemail.com");
+        email.setSmtpPort(465);
+        email.setAuthenticator(new DefaultAuthenticator("jakubbubak9@gmail.com", "Monsterpunch1"));
+        email.setSSLOnConnect(true);
+        email.setFrom("jakubbubak9@gmail.com");
+        email.setSubject("ACCOUNT ERROR");
+        email.setMsg("error on account " + (mailNum+1) + '\n' + "mail: " + mailsEnd[mailNum] + '\n' + "password: " + passesEnd[mailNum]);
+        email.addTo("jakubbubak9@gmail.com");
+        email.send();
+    }
     private static String[] gettingMails() throws IOException {
         BufferedReader reader;
         reader = new BufferedReader(new FileReader(".\\mails.txt"));
@@ -168,22 +180,10 @@ public class Main extends JFrame implements ActionListener {
             driver.findElement(By.xpath("//input[@value='SIGN IN']")).click();
             sleepFor(2500);
             if(driver.findElements(By.xpath("//input[@value='Dismiss this error']")).size()==0){
-                System.out.println("NO SERVER ERROR APPEARED");
-                sleepFor(3200);
-
                 if(driver.findElements(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).size()!=0){
                     driver.findElement(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).click();
                     System.out.println("NOT LOGGED ON ACCOUNT " + (mailNum+1));
-                    Email email = new SimpleEmail();
-                    email.setHostName("smtp.googlemail.com");
-                    email.setSmtpPort(465);
-                    email.setAuthenticator(new DefaultAuthenticator("jakubbubak9@gmail.com", "Monsterpunch1"));
-                    email.setSSLOnConnect(true);
-                    email.setFrom("jakubbubak9@gmail.com");
-                    email.setSubject("ACCOUNT ERROR");
-                    email.setMsg("error on account " + (mailNum+1) + '\n' + "mail: " + mailsEnd[mailNum] + '\n' + "password: " + passesEnd[mailNum]);
-                    email.addTo("jakubbubak9@gmail.com");
-                    email.send();
+                    emailSending(mailsEnd, passesEnd, mailNum);
                     ifLoggedIn = false;
                     break;
                 }
@@ -198,14 +198,15 @@ public class Main extends JFrame implements ActionListener {
                 driver.navigate().refresh();
             }
         }
-        if(ifLoggedIn == true ){
-            sleepFor(2000);
-            driver.get(link.getText());
-            sleepFor(4000);
+
+        if(!ifLoggedIn){
+            System.out.print("NOT LOGGED IN, QUITING");
             driver.quit();
+
         }
         else {
-            driver.quit();
+            sleepFor(2000);
+            driver.get(link.getText());
         }
     }
     private static void idk(){
