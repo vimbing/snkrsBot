@@ -1,0 +1,223 @@
+package com.company;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.concurrent.TimeUnit;
+
+public class Main extends JFrame implements ActionListener {
+    public static JTextField link;
+    public static JTextField mail;
+    public static JTextField pass;
+
+    public static String mailGenerate(String mailNum){
+        String mail;
+        mail = "konto" + mailNum + "@vimbing.club";
+        return mail;
+    }
+    private static void sleepFor(int miliseconds) throws InterruptedException {
+        TimeUnit.MILLISECONDS.sleep(miliseconds);
+    }
+    private static void emailSending(String[] mailsEnd, String[] passesEnd, int mailNum) throws EmailException {
+        Email email = new SimpleEmail();
+        email.setHostName("smtp.googlemail.com");
+        email.setSmtpPort(465);
+        email.setAuthenticator(new DefaultAuthenticator("jakubbubak9@gmail.com", "Monsterpunch1"));
+        email.setSSLOnConnect(true);
+        email.setFrom("jakubbubak9@gmail.com");
+        email.setSubject("ACCOUNT ERROR");
+        email.setMsg("error on account " + (mailNum+1) + '\n' + "mail: " + mailsEnd[mailNum] + '\n' + "password: " + passesEnd[mailNum]);
+        email.addTo("jakubbubak9@gmail.com");
+        email.send();
+    }
+    private static String[] gettingMails() throws IOException {
+        BufferedReader reader;
+        reader = new BufferedReader(new FileReader(".\\mails.txt"));
+        String line = reader.readLine();
+        String[] mailsString = new String[100];
+        int count = 0;
+        while(line != null){
+            mailsString[count] = line;
+            line = reader.readLine();
+            count++;
+        }
+        reader.close();
+        return  mailsString;
+    }
+    private static String[] gettingPasswords() throws IOException {
+        BufferedReader readerpass;
+        readerpass = new BufferedReader(new FileReader(".\\passwords.txt"));
+        String linepass = readerpass.readLine();
+        String[] passString = new String[100];
+        int countpass = 0;
+        while(linepass != null){
+            passString[countpass] = linepass;
+            linepass = readerpass.readLine();
+            countpass++;
+        }
+        readerpass.close();
+        return passString;
+    }
+    private static void myGui(){
+        JPanel panel = new JPanel();
+        JFrame frame = new JFrame();
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.add(panel);
+
+        //LINK
+        JLabel labelLink = new JLabel("Link: ");
+        labelLink.setBounds(10, 80, 80, 50);
+        panel.add(labelLink);
+
+        link = new JTextField(20);
+        link.setBounds(100, 80, 165, 25);
+        panel.add(link);
+
+        //MAILS
+        JLabel labelMail = new JLabel("Mails: ");
+        labelMail.setBounds(10, 80, 80, 50);
+        panel.add(labelMail);
+
+        mail = new JTextField(20);
+        mail.setBounds(100, 80, 165, 25);
+        panel.add(mail);
+
+        //PASSWORDS
+        JLabel labelPass = new JLabel("Passwords: ");
+        labelPass.setBounds(10, 80, 80, 50);
+        panel.add(labelPass);
+
+        pass = new JTextField(20);
+        pass.setBounds(100, 80, 165, 25);
+        panel.add(pass);
+
+
+        JButton button = new JButton("GO!");
+        button.setSize(50, 30);
+        button.addActionListener(new Main());
+        panel.add(button);
+
+        frame.setSize(274, 225);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+
+    }
+    private static void mailGenerating(String mailString) throws IOException {
+        char[] charString;
+        charString = mailString.toCharArray();
+        for(int i=0; i<mailString.length(); i++){
+            if(mailString.charAt(i)==':'){
+                charString[i] = '\n';
+            }
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(".\\mails.txt"));
+        writer.write(charString);
+        writer.close();
+    }
+    private static void passwordGenerating(String passString) throws IOException {
+        char[] charStringPass;
+        charStringPass = passString.toCharArray();
+        for(int i=0; i<passString.length(); i++){
+            if(passString.charAt(i)==':'){
+                charStringPass[i] = '\n';
+            }
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(".\\passwords.txt"));
+        writer.write(charStringPass);
+        writer.close();
+    }
+    public static void main(String[] args) throws IOException {
+        myGui();
+    }
+    public static void doStuff(WebDriver driver, int mailNum) throws InterruptedException, IOException, EmailException {
+        String[] mailsEnd = gettingMails();
+        String[] passesEnd = gettingPasswords();
+        driver.get("https://www.nike.com/launch");
+        sleepFor(1500);
+        System.out.println("FOR ACCOUNT NUMBER " + (mailNum+1));
+        for(int i=1; i>0; i++){
+            if(!driver.getCurrentUrl().equals("https://www.nike.com/launch")){
+                System.out.println("LINK COUNTRY ERROR");
+                driver.get("https://www.nike.com/launch");
+                sleepFor(1500);
+            }
+            else{
+                System.out.println("LINK COUNTRY FINE FOR ACCOUNT");
+                break;
+            }
+        }
+        boolean ifLoggedIn;
+        for(;;){
+            if(driver.findElements(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).size()!=0){
+                driver.findElement(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).click();
+            }
+            sleepFor(1000);
+            driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/div/header/div[2]/section/div[2]/button")).click();
+            sleepFor(690);
+            driver.findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/nav/ul/li[1]/button")).click();
+            sleepFor(1000);
+            driver.findElement(By.xpath("//input[@placeholder='Email address']")).sendKeys(mailsEnd[mailNum]);
+            sleepFor(1000);
+            driver.findElement(By.xpath("//input[@placeholder='Password']")).sendKeys(passesEnd[mailNum]);
+            driver.findElement(By.xpath("//input[@value='SIGN IN']")).click();
+            sleepFor(2500);
+            if(driver.findElements(By.xpath("//input[@value='Dismiss this error']")).size()==0){
+                if(driver.findElements(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).size()!=0){
+                    driver.findElement(By.xpath("//button[@class='js-close close-modal z10 bg-transparent']")).click();
+                    System.out.println("NOT LOGGED ON ACCOUNT " + (mailNum+1));
+                    emailSending(mailsEnd, passesEnd, mailNum);
+                    ifLoggedIn = false;
+                    break;
+                }
+                else{
+                    System.out.println("LOGGED IN");
+                    ifLoggedIn = true;
+                    break;
+                }
+            }
+            else {
+                System.out.println("ERROR APPEARED, RESTARTING...");
+                driver.navigate().refresh();
+            }
+        }
+
+        if(!ifLoggedIn){
+            System.out.print("NOT LOGGED IN, QUITING");
+            driver.quit();
+
+        }
+        else {
+            sleepFor(2000);
+            driver.get(link.getText());
+        }
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            mailGenerating(mail.getText());
+            passwordGenerating(pass.getText());
+            MyDrivers drivers = new MyDrivers();
+            WebDriver[] w = drivers.triggerDrivers();
+
+            doStuff(w[0], 0);
+            doStuff(w[1], 1);
+            doStuff(w[2], 2);
+            doStuff(w[3], 3);
+            doStuff(w[4], 4);
+
+            sleepFor(100);
+            System.out.println("PROGRAM ENDING");
+            System.exit(0);
+        }
+        catch(InterruptedException | IOException | EmailException interruptedException){
+            interruptedException.printStackTrace();
+        }
+    }
+}
