@@ -1,0 +1,43 @@
+package com.company;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import java.io.File;
+public class MyDrivers {
+    public WebDriver[] triggerDrivers(){
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\chromedriver.exe");
+        ChromeOptions options1 = new ChromeOptions();
+        ChromeOptions options2 = new ChromeOptions();
+        ChromeOptions options3 = new ChromeOptions();
+        ChromeOptions options4 = new ChromeOptions();
+        ChromeOptions options5 = new ChromeOptions();
+        options1.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p1.zip"));
+        options2.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p2.zip"));
+        options3.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p3.zip"));
+        options4.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p4.zip"));
+        options5.addExtensions(new File("C:\\Users\\Vimbing\\Desktop\\proxies\\zips\\p5.zip"));
+        WebDriver driver1 = new ChromeDriver(options1);
+        WebDriver driver2 = new ChromeDriver(options2);
+        WebDriver driver3 = new ChromeDriver(options3);
+        WebDriver driver4 = new ChromeDriver(options4);
+        WebDriver driver5 = new ChromeDriver(options5);
+        driver1.manage().window().setSize(new Dimension(500, 500));
+        driver1.manage().window().setPosition(new Point(0, 0));
+        driver1.manage().deleteAllCookies();
+        driver2.manage().window().setSize(new Dimension(500, 500));
+        driver2.manage().window().setPosition(new Point(500, 0));
+        driver2.manage().deleteAllCookies();
+        driver3.manage().window().setSize(new Dimension(500, 500));
+        driver3.manage().window().setPosition(new Point(1000, 0));
+        driver3.manage().deleteAllCookies();
+        driver4.manage().window().setSize(new Dimension(500, 500));
+        driver4.manage().window().setPosition(new Point(1500, 0));
+        driver4.manage().deleteAllCookies();
+        driver5.manage().window().setSize(new Dimension(500, 500));
+        driver5.manage().window().setPosition(new Point(0, 500));driver5.manage().deleteAllCookies();
+        WebDriver[] driversArray = {driver1, driver2, driver3, driver4, driver5};
+        return driversArray;
+    }
+}
