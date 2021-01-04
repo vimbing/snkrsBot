@@ -1,0 +1,88 @@
+package com.company;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+import java.io.IOException;
+import java.util.Scanner;
+
+public class Main {
+    private static int guiChoice;
+    private static WebDriver driver;
+    private static int accCountEverywhere = 0;
+    private static void gui(){
+        System.out.println("\n" +
+                "       .__         ___.    .__                    _____   .__         \n" +
+                "___  __|__|  _____ \\_ |__  |__|  ____    ____    /  _  \\  |__|  ____  \n" +
+                "\\  \\/ /|  | /     \\ | __ \\ |  | /    \\  / ___\\  /  /_\\  \\ |  | /  _ \\ \n" +
+                " \\   / |  ||  Y Y  \\| \\_\\ \\|  ||   |  \\/ /_/  >/    |    \\|  |(  <_> )\n" +
+                "  \\_/  |__||__|_|  /|___  /|__||___|  /\\___  / \\____|__  /|__| \\____/ \n" +
+                "                 \\/     \\/          \\//_____/          \\/             \n");
+
+        System.out.println("Hi, what do you want to bot today?");
+        System.out.println("1. SNKRS");
+        System.out.println("2. Zalando");
+        Scanner scanner = new Scanner(System.in);
+        guiChoice = scanner.nextInt();
+    }
+
+    private static void driversTriggering(int accCount){
+        WebDriver[] driver = new ChromeDriver[accCount];
+        ChromeOptions[] options = new ChromeOptions[accCount];
+    }
+
+    private static String[] passwordsAndMails(){
+        accCountEverywhere = 0;
+        String var;
+        Scanner scanner = new Scanner(System.in);
+        String[] returnedVars = new String[50];
+        var = scanner.nextLine();
+        char[] passChar = var.toCharArray();
+        for(int i=0; i<50; i++){
+            returnedVars[i] = "";
+        }
+        for (char c : passChar) {
+            if (c != ':'){
+                returnedVars[accCountEverywhere] += c;
+            }
+            else {
+                accCountEverywhere++;
+            }
+        }
+        return returnedVars;
+    }
+
+    private static void nikeSnkrs() throws IOException {
+        System.out.println("Input Mails");
+        String[] mails = passwordsAndMails();
+        System.out.println("Input Passwords");
+        String[] passwords = passwordsAndMails();
+
+
+    }
+    private static void zalando(){
+
+    }
+
+    public static void main(String[] args) throws IOException {
+        gui();
+        switch(guiChoice){
+            case 1:
+                System.out.println("Chosen Nike");
+                driversTriggering(accCountEverywhere);
+                nikeSnkrs();
+                break;
+            case 2:
+                System.out.println("Chosen Zalando");
+                driversTriggering(accCountEverywhere);
+                zalando();
+                break;
+            default:
+                System.out.println("Wrong number");
+                nikeSnkrs();
+                break;
+        }
+    }
+
+}
