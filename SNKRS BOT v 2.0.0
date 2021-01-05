@@ -1,5 +1,7 @@
 package com.company;
 
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -27,9 +29,33 @@ public class Main {
         guiChoice = scanner.nextInt();
     }
 
-    private static void driversTriggering(int accCount){
-        WebDriver[] driver = new ChromeDriver[accCount];
-        ChromeOptions[] options = new ChromeOptions[accCount];
+    private static ChromeDriver[] driversTriggering(int accCount){
+        System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\chromedriver.exe");
+        System.out.println("accCount = " + (accCount+1));
+        ChromeDriver[] driver = new ChromeDriver[(accCount+1)];
+        ChromeOptions[] options = new ChromeOptions[(accCount+1)];
+        ChromeDriver[] returnedDrivers = new ChromeDriver[(accCount+1)];
+        Point[] p = new Point[accCount];
+        for(int i=0; i<(accCount+1); i++){
+            int x = i*500;
+            
+            //------------------------------------
+            //-------------BreakPoint-------------
+            //------------------------------------
+
+            
+            int y =
+        }
+
+        for(int i=0; i<(accCount+1); i++){
+            options[i] = new ChromeOptions();
+            options[i].addArguments("--incognito");
+            driver[i] = new ChromeDriver(options[i]);
+            driver[i].manage().window().setSize(new Dimension(500, 500));
+            driver[i].manage().deleteAllCookies();
+            returnedDrivers[i] = driver[i];
+        }
+        return returnedDrivers;
     }
 
     private static String[] passwordsAndMails(){
@@ -58,8 +84,7 @@ public class Main {
         String[] mails = passwordsAndMails();
         System.out.println("Input Passwords");
         String[] passwords = passwordsAndMails();
-
-
+        driversTriggering(accCountEverywhere);
     }
     private static void zalando(){
 
@@ -70,8 +95,8 @@ public class Main {
         switch(guiChoice){
             case 1:
                 System.out.println("Chosen Nike");
-                driversTriggering(accCountEverywhere);
                 nikeSnkrs();
+
                 break;
             case 2:
                 System.out.println("Chosen Zalando");
