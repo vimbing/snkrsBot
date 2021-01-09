@@ -1,8 +1,8 @@
 package com.company;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -13,7 +13,6 @@ import java.util.Scanner;
 public class Main {
     private static int guiChoice;
     private static int ifHeadless;
-    private static WebDriver driver;
     private static int accCountEverywhere = 0;
     private static void gui(){
         System.out.println("\n" +
@@ -28,10 +27,14 @@ public class Main {
         System.out.println("1. SNKRS");
         System.out.println("2. SNKRS - headless");
         System.out.println("3. Zalando");
+        System.out.println("4. Supreme");
         Scanner scanner = new Scanner(System.in);
         guiChoice = scanner.nextInt();
     }
-
+    private static String[] myProxy(){
+        String[] proxies = {"2.56.101.236:8768", "185.126.65.12:7522", "2.56.101.151:8683", "2.56.101.232:8764", "2.56.101.113:8645", "2.56.101.23:8555", "185.126.65.8:7518", "2.56.101.107:8639", "2.56.101.64:8596", "185.126.65.14:7524", "2.56.101.65:8597", "2.56.101.143", "2.56.101.130:8662", "185.126.65.4:7514", "2.56.101.215:8747"};
+        return proxies;
+    }
     private static ChromeDriver[] driversTriggering(int accCount){
         System.setProperty("webdriver.chrome.driver", "C:\\Program Files (x86)\\chromedriver.exe");
         System.out.println("accCount = " + (accCount+1));
@@ -39,6 +42,8 @@ public class Main {
         ChromeOptions[] options = new ChromeOptions[(accCount+1)];
         ChromeDriver[] returnedDrivers = new ChromeDriver[(accCount+1)];
         DesiredCapabilities[] cap = new DesiredCapabilities[(accCount+1)];
+        String[] prxy = myProxy();
+        Proxy p = new Proxy();
 
         int[] x = new int[(accCount+1)];
         for(int i=0; i<(accCount+1); i++){
@@ -46,16 +51,14 @@ public class Main {
         }
 
         for(int i=0; i<(accCount+1); i++){
-            Proxy p = new Proxy();
             options[i] = new ChromeOptions();
-            options[i].addArguments("--incognito");
             if(ifHeadless == 1){
                 options[i].addArguments("--headless");
             }
             cap[i] = new DesiredCapabilities();
-            p.setSslProxy("2.56.101.144:8676");
-            p.setHttpProxy("2.56.101.144:8676");
-            p.setFtpProxy("2.56.101.144:8676");
+            p.setSslProxy(prxy[i]);
+            p.setHttpProxy(prxy[i]);
+            p.setFtpProxy(prxy[i]);
             cap[i].setCapability(CapabilityType.PROXY, p);
             options[i].merge(cap[i]);
             driver[i] = new ChromeDriver(options[i]);
@@ -90,31 +93,36 @@ public class Main {
         return returnedVars;
     }
 
-    private static void nikeSnkrs() throws IOException {
+
+    private static void nikeSnkrs() throws IOException, InterruptedException {
         System.out.println("Input Mails");
         String[] mails = passwordsAndMails();
         System.out.println("Input Passwords");
         String[] passwords = passwordsAndMails();
-        
-        
         ChromeDriver[] driver = driversTriggering(accCountEverywhere);
         for(int i=0; i<(accCountEverywhere+1); i++){
-            driver[i].get("https://www.google.com/");
-            System.out.println(driver[i].getCurrentUrl());
+            driver[i].get("https://www.nike.com/pl/launch");
+            if(driver[i].findElements(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).size()!=0){
+                driver[i].findElement(By.xpath("//*[@id=\"cookie-settings-layout\"]/div/div/div/div[3]/div[2]/button")).click();
+            }
+            driver[i].findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/div/header/div[2]/section/div[2]/button")).click();
+            Thread.sleep(1000);
+            driver[i].findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/nav/ul/li[1]/button")).click();
+            Thread.sleep(1000);
+            driver[i].findElement(By.xpath("//input[@placeholder='Adres e-mail']")).sendKeys(mails[i]);
+            Thread.sleep(500);
+            driver[i].findElement(By.xpath("//input[@placeholder='Hasło']")).sendKeys(mails[i]);
+            Thread.sleep(300);
+            driver[i].findElement(By.xpath("//input[@placeholder='Hasło']")).sendKeys("\n");
         }
     }
-    private static void zalando(){
-
-    }
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         gui();
         switch(guiChoice){
             case 1:
                 System.out.println("Chosen SNKRS");
                 ifHeadless = 0;
                 nikeSnkrs();
-
                 break;
             case 2:
                 System.out.println("Chosen SNKRS - headless");
@@ -124,7 +132,10 @@ public class Main {
             case 3:
                 System.out.println("Chosen Zalando");
                 driversTriggering(accCountEverywhere);
-                zalando();
+                break;
+            case 4:
+                System.out.println("Chosen Supreme");
+                driversTriggering(accCountEverywhere);
                 break;
             default:
                 System.out.println("Wrong number");
