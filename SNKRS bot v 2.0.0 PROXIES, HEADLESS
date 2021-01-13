@@ -15,14 +15,6 @@ public class Main {
     private static int ifHeadless;
     private static int accCountEverywhere = 0;
     private static void gui(){
-        System.out.println("\n" +
-                "       .__         ___.    .__                    _____   .__         \n" +
-                "___  __|__|  _____ \\_ |__  |__|  ____    ____    /  _  \\  |__|  ____  \n" +
-                "\\  \\/ /|  | /     \\ | __ \\ |  | /    \\  / ___\\  /  /_\\  \\ |  | /  _ \\ \n" +
-                " \\   / |  ||  Y Y  \\| \\_\\ \\|  ||   |  \\/ /_/  >/    |    \\|  |(  <_> )\n" +
-                "  \\_/  |__||__|_|  /|___  /|__||___|  /\\___  / \\____|__  /|__| \\____/ \n" +
-                "                 \\/     \\/          \\//_____/          \\/             \n");
-
         System.out.println("Hi, what do you want to bot today?");
         System.out.println("1. SNKRS");
         System.out.println("2. SNKRS - headless");
@@ -32,7 +24,7 @@ public class Main {
         guiChoice = scanner.nextInt();
     }
     private static String[] myProxy(){
-        String[] proxies = {"2.56.101.236:8768", "185.126.65.12:7522", "2.56.101.151:8683", "2.56.101.232:8764", "2.56.101.113:8645", "2.56.101.23:8555", "185.126.65.8:7518", "2.56.101.107:8639", "2.56.101.64:8596", "185.126.65.14:7524", "2.56.101.65:8597", "2.56.101.143", "2.56.101.130:8662", "185.126.65.4:7514", "2.56.101.215:8747"};
+        String[] proxies = {"2.56.101.59:8591", "2.56.101.87:8619", "2.56.101.207:8739", "2.56.101.185:8717", "2.56.101.33:8565", "2.56.101.156:8688", "2.56.101.95:8627"};
         return proxies;
     }
     private static ChromeDriver[] driversTriggering(int accCount){
@@ -64,7 +56,7 @@ public class Main {
             driver[i] = new ChromeDriver(options[i]);
             if(ifHeadless == 0){
                 driver[i].manage().window().setSize(new Dimension(500, 500));
-                driver[i].manage().window().setPosition(new Point(x[i], 0));
+                driver[i].manage().window().setPosition(new Point(0, 0));
                 driver[i].manage().deleteAllCookies();
             }
             returnedDrivers[i] = driver[i];
@@ -109,11 +101,11 @@ public class Main {
             Thread.sleep(1000);
             driver[i].findElement(By.xpath("//*[@id=\"root\"]/div/div/div[1]/nav/ul/li[1]/button")).click();
             Thread.sleep(1000);
-            driver[i].findElement(By.xpath("//input[@placeholder='Adres e-mail']")).sendKeys(mails[i]);
+            driver[i].findElement(By.xpath("//input[@name='emailAddress']")).sendKeys(mails[i]);
             Thread.sleep(500);
-            driver[i].findElement(By.xpath("//input[@placeholder='Hasło']")).sendKeys(mails[i]);
+            driver[i].findElement(By.xpath("//input[@name='password']")).sendKeys(mails[i]);
             Thread.sleep(300);
-            driver[i].findElement(By.xpath("//input[@placeholder='Hasło']")).sendKeys("\n");
+            driver[i].findElement(By.xpath("//input[@name='password']")).sendKeys("\n");
         }
     }
     public static void main(String[] args) throws IOException, InterruptedException {
